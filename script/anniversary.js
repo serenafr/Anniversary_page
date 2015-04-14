@@ -1,4 +1,5 @@
-var intervalID;
+var intervalID; //The ID that records images playing
+var textIntervalId;
 
 function getCurrentAndNext() {
 	var currentIndex;
@@ -36,6 +37,7 @@ function play() {
 		composite(animationDown, animationRight), 
 		composite(animationDown, animationLeft), 
 		animationOpacity];
+	//defines the speed of animation
 	function easeInOutCubic(x) {
 		if (x < 0.5) {
 			return 4 * x * x * x;
@@ -46,10 +48,12 @@ function play() {
 	function easeOutCubic(x) {
 		return 1 - (1 - x) * (1 - x) * (1 - x);
 	}
+	//autoplay images
 	if (intervalID == undefined) {
 		intervalID = setInterval(function() {
 			var animationIndex = Math.floor(Math.random() * animations.length);
 			animation(animations[animationIndex], easeOutCubic);
+			playNextTexts();
 		}, 3000);
 	}	
 }
@@ -57,6 +61,8 @@ function play() {
 function pause() {
 	clearInterval(intervalID);
 	intervalID = undefined;
+	clearInterval(textIntervalId);
+	textIntervalId = undefined;
 }
 
 function reSizeImgs() {
@@ -136,7 +142,7 @@ function animationUp(pic, startTime, duration, animationSpeedFunc) {
 	var currentValue = getCurrentValue(startValue, startTime, currentTime, duration, endValue, animationSpeedFunc);
 	pic.style.top = currentValue + 'px';
 	return currentTime - startTime < duration;
- }
+}
 
 //Play an image from top to bottom.
 function animationDown(pic, startTime, duration, animationSpeedFunc) {
@@ -162,4 +168,46 @@ function animationOpacity(pic, startTime, duration, animationSpeedFunc) {
  	var currentValue = getCurrentValue(startValue, startTime, currentTime, duration, endValue, animationSpeedFunc);
  	pic.style.opacity = currentValue;
  	return currentTime - startTime < duration;
- }
+}
+
+function getCurrentAndNextText() {
+ 	var texts = document.getElementsByClassName("text");
+ 	var currentIndex, nextIndex;
+ 	for (var i = 0; i < texts.length; i++) {
+ 		if(texts[i].style.display != 'none') {
+ 			currentIndex = i;
+ 			break;
+ 		}
+ 	}
+ 	nextIndex = Math.floor(Math.random() * (texts.length - 1));
+ 	if (nextIndex >= currentIndex) {
+		nextIndex++;
+	}
+	return {
+		currentText: texts[currentIndex], 
+		nextText: texts[nextIndex]
+	};
+}
+
+function setFontStyle(text) {
+ 	var fontFamily = [
+ 		'Miniver',
+ 		'Lovers Quarrel',
+ 		'Cedarville Cursive',
+ 		'Love Ya Like A Sister',
+ 		'Satisfy',
+ 		'Dawning of a New Day'];
+ 	var colors = ['white', '#ffff8f', '#8fffff', '#ffccff', '#cc99ff'];
+	var colorIndex = Math.floor(Math.random() * colors.length);
+	text.style.color = colors[colorIndex];
+	var fontIndex = Math.floor(Math.random() * fontFamily.length);
+	text.style.fontFamily = fontFamily[fontIndex];
+}
+
+
+function playNextTexts() {
+	var twoTexts = getCurrentAndNextText();
+	twoTexts.currentText.style.display = 'none';
+	setFontStyle(twoTexts.nextText);
+	twoTexts.nextText.style.display = '';
+}
