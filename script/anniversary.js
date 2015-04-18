@@ -54,7 +54,7 @@ function play() {
 			var animationIndex = Math.floor(Math.random() * animations.length);
 			animation(animations[animationIndex], easeOutCubic);
 			playNextTexts();
-		}, 3000);
+		}, 8000);
 	}	
 }
 
@@ -102,7 +102,7 @@ function getCurrentValue(startValue, startTime, currentTime, duration, endValue,
 function animation(updateFunc, animationSpeedFunc) {
 	var twoPics = getCurrentAndNext();
 	var startTime = new Date().getTime();
-	var duration = 1000;
+	var duration = 2000;
 	updateFunc(twoPics.nextPic, startTime, duration, animationSpeedFunc);
 	twoPics.nextPic.style.display = '';
 	twoPics.currentPic.style.zIndex = -2;
