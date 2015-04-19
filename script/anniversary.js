@@ -55,7 +55,7 @@ function play() {
 			var animationIndex = Math.floor(Math.random() * animations.length);
 			animation(animations[animationIndex], easeOutCubic);
 			playNextTexts();
-		}, 6000);
+		}, 8000);
 	}	
 }
 
@@ -199,18 +199,24 @@ function playNextTexts() {
 		textFadeOutAnimation(twoTexts.currentText, fadeOutDuration, startFadeOutTime);
 		if (twoTexts.currentText.style.opacity === '0') {
 			twoTexts.currentText.style.display = 'none';
-			twoTexts.nextText.style.display = '';
-			twoTexts.nextText.style.opacity = '0';
 			clearInterval(textFadeOutIntervalId);
-			var startFadeInTime = new Date().getTime();
-			var fadeInDuration = 1000;
-			var textFadeInInteralId = setInterval(function() {
-				textFadeInAnimation(twoTexts.nextText, fadeInDuration, startFadeInTime);
-				if (twoTexts.nextText.style.opacity === '1') {
-					clearInterval(textFadeInInteralId);
-				}
-			}, 20);
 		} 
+	}, 20);
+	setTimeout(function() {
+		textFadeIn(twoTexts.nextText);
+	}, 1000);
+}
+
+function textFadeIn(txt) {
+	var startFadeInTime = new Date().getTime();
+	var fadeInDuration = 2000;
+	txt.style.display = '';
+	txt.style.opacity = '0';
+	var textFadeInInteralId = setInterval(function() {
+		textFadeInAnimation(txt, fadeInDuration, startFadeInTime);
+		if (txt.style.opacity === '1') {
+			clearInterval(textFadeInInteralId);
+		}
 	}, 20);
 }
 
