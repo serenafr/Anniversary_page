@@ -26,6 +26,18 @@ function playNext() {
 	twoPics.nextPic.style.display = '';
 }
 
+//defines the speed of animation
+function easeInOutCubic(x) {
+	if (x < 0.5) {
+		return 4 * x * x * x;
+	} else {
+		return -4 * (1 - x) * (1 - x) * (1 - x) + 1;
+	}
+}
+function easeOutCubic(x) {
+	return 1 - (1 - x) * (1 - x) * (1 - x);
+}
+
 function play() {
 	var animations = [
 		animationLeft, 
@@ -37,24 +49,13 @@ function play() {
 		composite(animationDown, animationRight), 
 		composite(animationDown, animationLeft), 
 		animationOpacity];
-	//defines the speed of animation
-	function easeInOutCubic(x) {
-		if (x < 0.5) {
-			return 4 * x * x * x;
-		} else {
-			return -4 * (1 - x) * (1 - x) * (1 - x) + 1;
-		}
-	}
-	function easeOutCubic(x) {
-		return 1 - (1 - x) * (1 - x) * (1 - x);
-	}
 	//autoplay images
 	if (intervalID == undefined) {
 		intervalID = setInterval(function() {
 			var animationIndex = Math.floor(Math.random() * animations.length);
 			animation(animations[animationIndex], easeOutCubic);
 			playNextTexts();
-		}, 8000);
+		}, 6000);
 	}	
 }
 
@@ -189,25 +190,36 @@ function getCurrentAndNextText() {
 	};
 }
 
-function setFontStyle(text) {
- 	var fontFamily = [
- 		'Miniver',
- 		'Lovers Quarrel',
- 		'Cedarville Cursive',
- 		'Love Ya Like A Sister',
- 		'Satisfy',
- 		'Dawning of a New Day'];
- 	var colors = ['white', '#ffff8f', '#8fffff', '#ffccff', '#cc99ff'];
-	var colorIndex = Math.floor(Math.random() * colors.length);
-	text.style.color = colors[colorIndex];
-	var fontIndex = Math.floor(Math.random() * fontFamily.length);
-	text.style.fontFamily = fontFamily[fontIndex];
-}
-
-
+//The Animation result of current text fade out and next text fade in
 function playNextTexts() {
 	var twoTexts = getCurrentAndNextText();
-	twoTexts.currentText.style.display = 'none';
-	setFontStyle(twoTexts.nextText);
-	twoTexts.nextText.style.display = '';
+	var fadeOutDuration = 2000;
+	var startFadeOutTime = new Date().getTime();
+	var textFadeOutIntervalId = setInterval(function() {
+		textFadeOutAnimation(twoTexts.currentText, fadeOutDuration, startFadeOutTime);
+		if (twoTexts.currentText.style.opacity === '0') {
+			twoTexts.currentText.style.display = 'none';
+			twoTexts.nextText.style.display = '';
+			twoTexts.nextText.style.opacity = '0';
+			clearInterval(textFadeOutIntervalId);
+			var startFadeInTime = new Date().getTime();
+			var fadeInDuration = 1000;
+			var textFadeInInteralId = setInterval(function() {
+				textFadeInAnimation(twoTexts.nextText, fadeInDuration, startFadeInTime);
+				if (twoTexts.nextText.style.opacity === '1') {
+					clearInterval(textFadeInInteralId);
+				}
+			}, 20);
+		} 
+	}, 20);
+}
+
+function textFadeOutAnimation(txt, duration, startTime) {
+	var currentTime = new Date().getTime();
+	txt.style.opacity = getCurrentValue(1 /* startValue */, startTime, currentTime, duration, 0 /* endValue */, easeOutCubic);
+}
+
+function textFadeInAnimation(txt, duration, startTime, endTime) {
+	var currentTime = new Date().getTime();
+	txt.style.opacity = getCurrentValue(0 /* startValue */, startTime, currentTime, duration, 1 /* endValue */, easeOutCubic);
 }
