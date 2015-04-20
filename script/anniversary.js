@@ -1,22 +1,42 @@
 var intervalID; //The ID that records images playing
 var textIntervalId;
+var currentImageIndex;
+var pics;
+var currentTextIndex;
+var texts;
+
+function randomShuffle(array) {
+	var tmpValue, randomIndex;
+	for (var i = array.length - 1; i > 0; i--) {
+		randomIndex = Math.floor(Math.random() * (i + 1));
+		tmpValue = array[i];
+		array[i] = array[randomIndex];
+		array[randomIndex] = tmpValue;
+	}
+}
 
 function getCurrentAndNext() {
-	var currentIndex;
-	var pics = document.getElementsByClassName("pic");
-	for (var i = 0; i < pics.length; i++) {
-		if (pics[i].style.display != 'none') {
-			currentIndex = i;
-			break;
+	var currentPic;
+	if (!pics) {
+		pics = Array.prototype.slice.call(document.getElementsByClassName("pic"), 0);
+		randomShuffle(pics);
+		for (var i = 0; i < pics.length; i++) {
+			if (pics[i].style.display != 'none') {
+				currentImageIndex = i;
+				break;
+			}
 		}
 	}
-	var nextIndex = Math.floor(Math.random() * (pics.length - 1));
-	if (nextIndex >= currentIndex) {
-		nextIndex++;
+	currentPic = pics[currentImageIndex];
+	var nextImageIndex = currentImageIndex + 1;
+	if (nextImageIndex == pics.length) {
+		randomShuffle(pics);
+		nextImageIndex = 0;
 	}
+	currentImageIndex = nextImageIndex;
 	return {
-		currentPic: pics[currentIndex], 
-		nextPic: pics[nextIndex]
+		currentPic: currentPic, 
+		nextPic: pics[nextImageIndex]
 	};
 }
 
@@ -172,21 +192,31 @@ function animationOpacity(pic, startTime, duration, animationSpeedFunc) {
 }
 
 function getCurrentAndNextText() {
- 	var texts = document.getElementsByClassName("text");
- 	var currentIndex, nextIndex;
- 	for (var i = 0; i < texts.length; i++) {
- 		if(texts[i].style.display != 'none') {
- 			currentIndex = i;
- 			break;
+	var nextTextIndex;
+	var currentText;
+	if (!texts) {
+		texts = Array.prototype.slice.call(document.getElementsByClassName("text"));
+		randomShuffle(texts);
+		for (var i = 0; i < texts.length; i++) {
+			if (texts[i].style.display != 'none') {
+				currentTextIndex = i;
+				break;
+			}
+		}
+	} 
+	currentText = texts[currentTextIndex];
+	nextTextIndex = currentTextIndex + 1;
+ 	if (nextTextIndex == texts.length) {
+ 		nextTextIndex = 0;
+ 		randomShuffle(texts);
+ 		if (texts[nextTextIndex] == currentText) {
+ 			nextTextIndex++;
  		}
  	}
- 	nextIndex = Math.floor(Math.random() * (texts.length - 1));
- 	if (nextIndex >= currentIndex) {
-		nextIndex++;
-	}
+ 	currentTextIndex = nextTextIndex;
 	return {
-		currentText: texts[currentIndex], 
-		nextText: texts[nextIndex]
+		currentText: currentText, 
+		nextText: texts[nextTextIndex]
 	};
 }
 
